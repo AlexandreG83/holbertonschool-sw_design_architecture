@@ -25,40 +25,35 @@ class Scooter:
 
 class VehicleFactory:
     def __init__(self) -> None:
-        self._vehicles: dict[str, type] = {}
-        self._load_defaults()
-
-    def _load_defaults(self) -> None:
-        self._vehicles.update({
+        self._registry: dict[str, type] = {}
+        self._registry.update({
             "bus": Bus,
             "train": Train,
             "bike": Bike,
         })
 
-    def register_kind(self, vehicle_name: str, vehicle_cls: type) -> None:
-        self._vehicles[vehicle_name] = vehicle_cls
+    def register_kind(self, name: str, cls: type) -> None:
+        self._registry[name] = cls
 
-    def create(self, vehicle_type: str) -> object:
-        vehicle_class = self._vehicles.get(vehicle_type)
+    def create(self, kind: str) -> object:
+        vehicle = self._registry.get(kind)
 
-        if vehicle_class is None:
-            raise ValueError(
-                f"Vehicle type not supported: {vehicle_type}"
-            )
+        if vehicle is None:
+            raise ValueError(f"Unknown vehicle kind: {kind}")
 
-        return vehicle_class()
+        return vehicle()
 
 
 def main() -> None:
     factory = VehicleFactory()
 
-    for kind in ("bus", "train", "bike"):
-        print(factory.create(kind).mode())
+    print(factory.create("bus").mode())
+    print(factory.create("train").mode())
+    print(factory.create("bike").mode())
 
     factory.register_kind("scooter", Scooter)
 
-    scooter = factory.create("scooter")
-    print(scooter.mode())
+    print(factory.create("scooter").mode())
 
 
 if __name__ == "__main__":
