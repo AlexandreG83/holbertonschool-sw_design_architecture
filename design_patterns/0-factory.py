@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 from __future__ import annotations
 
 
@@ -25,23 +24,19 @@ class Scooter:
 
 class VehicleFactory:
     def __init__(self) -> None:
-        self._registry: dict[str, type] = {}
-        self._registry.update({
+        self._registry: dict[str, type] = {
             "bus": Bus,
             "train": Train,
             "bike": Bike,
-        })
+        }
 
     def register_kind(self, name: str, cls: type) -> None:
         self._registry[name] = cls
 
     def create(self, kind: str) -> object:
-        vehicle = self._registry.get(kind)
-
-        if vehicle is None:
-            raise ValueError(f"Unknown vehicle kind: {kind}")
-
-        return vehicle()
+        if kind not in self._registry:
+            raise ValueError(f"Unknown vehicle kind: {kind!r}")
+        return self._registry[kind]()
 
 
 def main() -> None:
@@ -52,7 +47,6 @@ def main() -> None:
     print(factory.create("bike").mode())
 
     factory.register_kind("scooter", Scooter)
-
     print(factory.create("scooter").mode())
 
 
