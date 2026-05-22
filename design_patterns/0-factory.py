@@ -1,52 +1,63 @@
 #!/usr/bin/env python3
-from __future__ import annotations
+
+from abc import ABC, abstractmethod
 
 
-class Bus:
-    def mode(self) -> str:
+class Vehicle(ABC):
+    @abstractmethod
+    def mode(self):
+        pass
+
+
+class Bus(Vehicle):
+    def mode(self):
         return "road"
 
 
-class Train:
-    def mode(self) -> str:
+class Train(Vehicle):
+    def mode(self):
         return "rails"
 
 
-class Bike:
-    def mode(self) -> str:
+class Bike(Vehicle):
+    def mode(self):
         return "lane"
 
 
-class Scooter:
-    def mode(self) -> str:
+class Scooter(Vehicle):
+    def mode(self):
         return "scooter_lane"
 
 
 class VehicleFactory:
-    def __init__(self) -> None:
-        self._registry: dict[str, type] = {
-            "bus": Bus,
-            "train": Train,
-            "bike": Bike,
-        }
+    def __init__(self):
+        self._registry = {}
 
-    def register_kind(self, name: str, cls: type) -> None:
+    def register_kind(self, name, cls):
         self._registry[name] = cls
 
-    def create(self, kind: str) -> object:
-        if kind not in self._registry:
-            raise ValueError(f"Unknown vehicle kind: {kind!r}")
-        return self._registry[kind]()
+    def create(self, kind):
+        cls = self._registry.get(kind)
+
+        if cls is None:
+            raise ValueError(f"Unknown vehicle type: {kind}")
+
+        return cls()
 
 
-def main() -> None:
+def main():
     factory = VehicleFactory()
+
+    factory.register_kind("bus", Bus)
+    factory.register_kind("train", Train)
+    factory.register_kind("bike", Bike)
+
+    # Register new vehicle type without modifying create()
+    factory.register_kind("scooter", Scooter)
 
     print(factory.create("bus").mode())
     print(factory.create("train").mode())
     print(factory.create("bike").mode())
-
-    factory.register_kind("scooter", Scooter)
     print(factory.create("scooter").mode())
 
 
