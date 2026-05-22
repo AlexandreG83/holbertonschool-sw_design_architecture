@@ -1,63 +1,51 @@
 #!/usr/bin/env python3
 
-from abc import ABC, abstractmethod
 
-
-class Vehicle(ABC):
-    @abstractmethod
-    def mode(self):
-        pass
-
-
-class Bus(Vehicle):
+class Bus:
     def mode(self):
         return "road"
 
 
-class Train(Vehicle):
+class Train:
     def mode(self):
         return "rails"
 
 
-class Bike(Vehicle):
+class Bike:
     def mode(self):
         return "lane"
 
 
-class Scooter(Vehicle):
+class Scooter:
     def mode(self):
         return "scooter_lane"
 
 
 class VehicleFactory:
     def __init__(self):
-        self._registry = {}
+        self._registry = {
+            "bus": Bus,
+            "train": Train,
+            "bike": Bike,
+        }
 
     def register_kind(self, name, cls):
         self._registry[name] = cls
 
     def create(self, kind):
-        cls = self._registry.get(kind)
-
-        if cls is None:
-            raise ValueError(f"Unknown vehicle type: {kind}")
-
-        return cls()
+        if kind not in self._registry:
+            raise ValueError("Unknown vehicle kind")
+        return self._registry[kind]()
 
 
 def main():
     factory = VehicleFactory()
 
-    factory.register_kind("bus", Bus)
-    factory.register_kind("train", Train)
-    factory.register_kind("bike", Bike)
-
-    # Register new vehicle type without modifying create()
-    factory.register_kind("scooter", Scooter)
-
     print(factory.create("bus").mode())
     print(factory.create("train").mode())
     print(factory.create("bike").mode())
+
+    factory.register_kind("scooter", Scooter)
     print(factory.create("scooter").mode())
 
 
